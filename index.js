@@ -7,7 +7,12 @@
  * nesneyiTrimle({ isim: '  jane  ' }) // yeni bir nesne döndürür { name: 'jane' }
  */
 function nesneyiTrimle(obj) {
-  // ✨ kodlar buraya
+  for (const key in obj) {
+    if (typeof obj[key] === "string") {
+      obj[key] = obj[key].trim();
+    }
+  }
+  return obj;
 }
 
 /**
@@ -19,7 +24,10 @@ function nesneyiTrimle(obj) {
  * verileniTrimle({ isim: '  jane  ' , yas: ' 34 '}, 'isim') // şunu döndürür { isim: 'jane', yas: ' 34 '}
  */
 function verileniTrimle(obj, prop) {
-  // ✨ kodlar buraya
+  if (typeof obj[prop] === "string") {
+    obj[prop] = obj[prop].trim();
+  }
+  return obj;
 }
 
 /**
@@ -32,6 +40,9 @@ function verileniTrimle(obj, prop) {
  */
 function enBuyukTamsayiyiBul(tamsayilar) {
   // ✨ kodlar buraya
+  const sayilar = tamsayilar.map((item) => item.tamsayi);
+
+  return Math.max(...sayilar);
 }
 
 function Sayici(ilkSayi) {
@@ -39,10 +50,9 @@ function Sayici(ilkSayi) {
    * [Görev 4A] Sayici bir sayaç oluşturur
    * @param {number} ilkSayi - Sayacin ilk değeri
    */
-  
-  // ✨ gerekli propları ekleyin
-  
 
+  // ✨ gerekli propları ekleyin
+  this.deger = ilkSayi;
   /**
    * [Görev 4B] asagiSay metodu sıfıra doğru sayar
    * @returns {number} - bir sonraki sayı, sıfırdan küçük olamaz
@@ -56,14 +66,20 @@ function Sayici(ilkSayi) {
    * sayac.asagiSay() // 0 döndürür
    */
   this.asagiSay = () => {
-    // ✨ kodlar buraya
-  }
+    const mevcut = this.deger;
+    if (this.deger > 0) {
+      this.deger--;
+    }
+    return mevcut;
+  };
 }
 
 function Mevsimler() {
   /**
    * [Görev 5A] Mevsimler , bir mevsimler nesnesi oluşturur
    */
+  this.mevsimler = ["ilkbahar", "yaz", "sonbahar", "kış"];
+  this.index = 0; // başlangıç "ilkbahar"
 
   // ✨ gerekli propları ekleyin
 
@@ -80,72 +96,63 @@ function Mevsimler() {
    * mevsimler.sonraki() // "yaz" döndürür
    */
   this.sonraki = () => {
-    // ✨ kodlar buraya
-  }
+    this.index++;
+
+    // ternary ile kontrol: 3'ten büyükse 0 yap
+    this.index = this.index > 3 ? 0 : this.index;
+
+    return this.mevsimler[this.index];
+  };
 }
 
-function Araba(/*kodlar buraya */) {
+function Araba(isim, depo, kml) {
   /**
    * [Görev 6A] Araba 3 argüman alarak bir araba nesnesi oluşturur
-   * @param {string} isim - arabanın ismi
-   * @param {number} depo - benzin deposu kapasitesi
-   * @param {number} kml - arabanın litre başına kat edebileceği km yol
    */
- 
-    this.odometer = 0 // araba 0 kilometrede yüklenecek
-    this.depo = depoBenzin // araba full depoyla yüklenecek
-    // ✨ gerekli propları ekleyin
-
-  
+  this.isim = isim;
+  this.kapasite = depo; // toplam depo kapasitesi
+  this.kml = kml; // litre başına km
+  this.odometer = 0; // başlangıç km
+  this.depo = depo; // full depo ile başlar
 
   /**
    * [Görev 6B] sur metodu odometera km ekler ve aynı oranda depodan benzin tüketir
-   * @param {string} gidilecekyol - arabayı sürmek istediğimiz km yol
-   * @returns {number} - güncellenen odometer değeri
-   *
-   * ÖRNEK
-   * const focus = new Araba('focus', 20, 30)
-   * focus.sur(100) // 100 döndürür
-   * focus.sur(100) // 200 döndürür
-   * focus.sur(100) // 300 döndürür
-   * focus.sur(200) // 500 döndürür
-   * focus.sur(200) // 600 döndürür (100 km sonra benzin bitti)
    */
   this.sur = (gidilecekyol) => {
-    // ✨ kodlar buraya
-  }
+    // gereken yakıt
+    const gerekenBenzin = gidilecekyol / this.kml;
 
+    if (gerekenBenzin <= this.depo) {
+      // yeterli benzin varsa
+      this.odometer += gidilecekyol;
+      this.depo -= gerekenBenzin;
+    } else {
+      // benzin yetmezse, sadece gidilebilecek kadar yol
+      const gidilebilecekYol = this.depo * this.kml;
+      this.odometer += gidilebilecekYol;
+      this.depo = 0;
+    }
+
+    return this.odometer;
+  };
   /**
    * [Görev 6C] Depoya benzin ekleme
-   * @param {number} litre - depoya eklemek istediğimiz benzin litresi
-   * @returns {number} - benzin eklendikten sonra gidilebilecek maksimum yol
-   *
-   * ÖRNEK
-   * const focus = new Araba('focus', 20, 30)
-   * focus.sur(600) // 600 döndürür
-   * focus.sur(1) // 600 döndürür (depo boş olduğundan yol gidilemedi)
-   * focus.benzinal(99) // 600 döndürür (depo yalnızca 20 litre alabiliyor)
    */
   this.benzinal = (litre) => {
-    // ✨ kodlar buraya
-  }
+    // eklenen litre kapasiteyi aşarsa, kapasiteye eşitle
+    this.depo =
+      this.depo + litre > this.kapasite ? this.kapasite : this.depo + litre;
+
+    return this.depo * this.kml;
+  };
 }
 
-/**
- * [Görev 7] Bir sayının çift olup olmadığını asenkron olarak çözümler
- * @param {number} sayi - kontrol edilecek sayı
- * @returns {promise} - sayı çiftse true, aksi takdirde false
- *
- * ÖRNEK
- * asenkronCiftSayi(2).then(result => {
- *    // sonuç true
- * })
- * asenkronCiftSayi(3).then(result => {
- *    // sonuç false
- * })
- */
-function asenkronCiftSayi(sayi) {
-  // ✨ implement
+async function asenkronCiftSayi(sayi) {
+  if (typeof sayi !== "number") {
+    throw new Error("Lütfen bir sayı girin");
+  }
+
+  return sayi % 2 === 0;
 }
 
 module.exports = {
@@ -156,4 +163,4 @@ module.exports = {
   Sayici,
   Mevsimler,
   Araba,
-}
+};
